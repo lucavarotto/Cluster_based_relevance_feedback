@@ -1,15 +1,27 @@
+import os
+
 from elasticsearch import Elasticsearch as esserver
 esclient = esserver('http://localhost:9200')
 from cluster_pseudo_RF import QE_kNN
 
+# I percorsi sono ancorati alla cartella di questo file, non alla working
+# directory, cosi' lo script funziona da qualsiasi posizione venga lanciato.
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))   # Codice/
+PROJECT_DIR = os.path.dirname(BASE_DIR)                 # radice del progetto
+DATA_DIR = os.path.join(PROJECT_DIR, "Dati")            # i topic
+OUT_DIR = os.path.join(PROJECT_DIR, "Results", "Test")  # le run prodotte
+
 def searchTxt(pathInput, indexName):
+
+  # Results/ non e' versionata, quindi puo' mancare in un clone pulito
+  os.makedirs(OUT_DIR, exist_ok=True)
 
   for card_R in [10,25,50,75,100]:
     for e in [10,25,50,75,100]:
       for Lambda in [range(0.1,1,0.1)]:
 
         file = open(pathInput, 'r')
-        fileO = open(f"C:/Users/Utente/OneDrive/Universita/2023-24/IR/Progetto/Results/Test/results_{card_R}_{e}_{Lambda}_minoccurrences10.txt", 'w')
+        fileO = open(os.path.join(OUT_DIR, f"results_{card_R}_{e}_{Lambda}_minoccurrences10.txt"), 'w')
 
         while True:
           content=file.readline()
@@ -32,4 +44,4 @@ def searchTxt(pathInput, indexName):
         file.close()
         fileO.close()
 
-searchTxt("C:/Users/Utente/OneDrive/Universita/2023-24/IR/Progetto/test.txt", "robust")
+searchTxt(os.path.join(DATA_DIR, "test.txt"), "robust")

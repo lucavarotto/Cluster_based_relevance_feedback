@@ -1,0 +1,14 @@
+# Dati e risultati degli esperimenti: restano nella cartella di lavoro locale
+Dati/
+Results/
+
+# La presentazione: su GitHub resta il PDF, non il sorgente
+*.pptx
+
+# Paper di riferimento di terzi: si citano, non si ridistribuiscono
+Paper/
+
+# File generati
+*.log
+.Rhistory
+__pycache__/
