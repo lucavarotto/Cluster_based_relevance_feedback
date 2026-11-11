@@ -57,7 +57,7 @@ The post-retrieval function is `QE_kNN` in
 ## Repository structure
 
 ```
-cluster_based_relevance_feedback/
+Cluster_based_relevance_feedback/
 ├── Codice/
 │   ├── bulk.py                      # indexes ROBUST 2004 into Elasticsearch
 │   ├── bulk_without_stopwords.py    # same, dropping stopwords at index time
@@ -108,11 +108,15 @@ compared with BM-25 on the test set:
 | Best MAP | `N=10`, `e=25`, `λ=0.7` | MAP | 0.13 | **0.15** |
 | Best P@5 | `N=10`, `e=100`, `λ=0.9` | P@5 | 0.48 | **0.52** |
 
-**Significance.** Both comparisons were tested with a paired t-test and a
-Wilcoxon signed-rank test, one-sided alternative. The gain in average precision
-is significant (p < 0.05); the gain in P@5 is **not** (p > 0.05). So the method
-improves the ranking as a whole, while the evidence on the very top of the list
-is not conclusive.
+**Significance.** The MAP result is the one that holds up: **+15% over BM-25**,
+and the improvement in average precision is **significant under both a paired
+t-test and a Wilcoxon signed-rank test**, one-sided alternative, p < 0.05. Two
+tests agreeing on a gain of this size is the point of the project: clustering
+the top-retrieved documents and expanding from the dominant ones does make the
+ranking better, not just different. The second configuration lifts P@5 from
+0.48 to 0.52, but there the same tests do not reach significance (p > 0.05), so
+the evidence on the very top of the list stays weaker than on the ranking as a
+whole.
 
 **Where it helps and where it hurts.** Looking at single topics under the best
 MAP configuration, topic 607, *Human genetic code*, improves the most: the
@@ -122,7 +126,9 @@ Topic 626, *Human Stampede*, degrades the most: the first retrieval is led by
 non-relevant documents about the Calgary Stampede rodeo, so the expansion picks
 up *calgary*, *rodeo* and *stampeders*, and the one marginally relevant document
 slips from rank 2 to rank 10. The method inherits the quality of its first
-retrieval, which is the structural limit of any pseudo-relevance feedback.
+retrieval, the structural limit of any pseudo-relevance feedback, and the
+dominance threshold is what keeps that limit in check: when no document is
+dominant the function hands back the BM-25 ranking untouched.
 
 The practical cost is computational: every query needs a clustering, a
 temporary index and two retrievals, which is what kept the grid search coarse.
